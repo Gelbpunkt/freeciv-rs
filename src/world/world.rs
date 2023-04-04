@@ -9,7 +9,8 @@ pub struct World {
 }
 
 impl World {
-    #[must_use] pub fn tile_at(&self, x: usize, y: usize) -> Option<&Tile> {
+    #[must_use]
+    pub fn tile_at(&self, x: usize, y: usize) -> Option<&Tile> {
         let x = if self.wrapping_x && x >= self.width {
             x % self.width
         } else {

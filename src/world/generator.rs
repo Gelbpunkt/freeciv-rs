@@ -14,6 +14,7 @@ pub enum LandDistribution {
     Continguous,
 }
 
-#[must_use] pub fn generate(_params: Parameters) -> World {
+#[must_use]
+pub fn generate(_params: Parameters) -> World {
     todo!()
 }
