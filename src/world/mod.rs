@@ -1,4 +1,5 @@
 mod generator;
+mod visualizer;
 mod world;
 
 pub use generator::{generate, LandDistribution, Parameters};

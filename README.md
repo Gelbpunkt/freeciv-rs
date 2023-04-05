@@ -15,6 +15,14 @@ This is my heavy WIP reimplementation of a slightly simplified version of [FreeC
 - [ ] Basic research
 - [ ] much more
 
+- [x] Extract and label tile images
+- [ ] Extract and label [city images](https://github.com/freeciv/freeciv/blob/main/data/trident/cities.png)
+- [ ] Extract and label [units](https://github.com/freeciv/freeciv/blob/main/data/trident/units.png)
+- [ ] Extract and label [extra units](https://github.com/freeciv/freeciv/blob/main/data/trident/extra_units.png)
+- [ ] Extract and label [fog](https://github.com/freeciv/freeciv/blob/main/data/trident/fog.png)
+- [ ] Extract and label [roads](https://github.com/freeciv/freeciv/blob/main/data/trident/roads.png)
+- [ ] Extract and label [select](https://raw.githubusercontent.com/freeciv/freeciv/main/data/trident/select.png)
+
 ## License
 
 Same as FreeCiv, GPLv2.

@@ -4,10 +4,18 @@
     rustdoc::broken_intra_doc_links
 )]
 
+use image::ImageFormat;
+use world::{generate, Parameters};
+
 pub mod research;
 pub mod tiles;
 pub mod world;
 
 fn main() {
-    todo!()
+    let params = Parameters::default();
+    let world = generate(params);
+    let rendered = world.render();
+    rendered
+        .save_with_format("map.png", ImageFormat::Png)
+        .unwrap();
 }
