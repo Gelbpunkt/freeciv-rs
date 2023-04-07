@@ -1,16 +1,11 @@
 use std::hint::unreachable_unchecked;
 
 use bitflags::bitflags;
-use image::{imageops, DynamicImage, GenericImage, ImageFormat, Rgba};
+use image::{imageops, GenericImage, Rgba};
 
-use super::images;
+use super::images::get_image;
 
 pub const TILE_IMAGE_SIZE: u32 = 30;
-
-fn load_png(buf: &'static [u8]) -> DynamicImage {
-    // SAFETY: The buffer is known to be a valid PNG.
-    unsafe { image::load_from_memory_with_format(buf, ImageFormat::Png).unwrap_unchecked() }
-}
 
 /// The FreeCiv map consists of tiles, which are laid out in a grid of squares.
 /// Technically, FreeCiv supports other shapes, but we will simplify it to
@@ -397,49 +392,47 @@ impl Terrain {
             | south.map_or(false, |t| t == Terrain::Glacier)
             | west.map_or(false, |t| t == Terrain::Glacier);
 
-        let buf = if any_is_glacier {
+        let img = if any_is_glacier {
             match (north_water, east_water, south_water, west_water) {
-                (true, true, true, true) => images::WATER_WITH_ICE_SHELVES_NESW,
-                (true, true, true, false) => images::WATER_WITH_ICE_SHELVES_NES,
-                (true, true, false, true) => images::WATER_WITH_ICE_SHELVES_NEW,
-                (true, false, true, true) => images::WATER_WITH_ICE_SHELVES_NSW,
-                (false, true, true, true) => images::WATER_WITH_ICE_SHELVES_ESW,
-                (true, true, false, false) => images::WATER_WITH_ICE_SHELVES_NE,
-                (true, false, true, false) => images::WATER_WITH_ICE_SHELVES_NS,
-                (true, false, false, true) => images::WATER_WITH_ICE_SHELVES_NW,
-                (false, true, true, false) => images::WATER_WITH_ICE_SHELVES_ES,
-                (false, true, false, true) => images::WATER_WITH_ICE_SHELVES_EW,
-                (false, false, true, true) => images::WATER_WITH_ICE_SHELVES_SW,
-                (true, false, false, false) => images::WATER_WITH_ICE_SHELVES_N,
-                (false, true, false, false) => images::WATER_WITH_ICE_SHELVES_E,
-                (false, false, true, false) => images::WATER_WITH_ICE_SHELVES_S,
-                (false, false, false, true) => images::WATER_WITH_ICE_SHELVES_W,
-                (false, false, false, false) => images::WATER_WITH_ICE_SHELVES_NONE,
+                (true, true, true, true) => get_image("water_with_ice_shelves_nesw"),
+                (true, true, true, false) => get_image("water_with_ice_shelves_nes"),
+                (true, true, false, true) => get_image("water_with_ice_shelves_new"),
+                (true, false, true, true) => get_image("water_with_ice_shelves_nsw"),
+                (false, true, true, true) => get_image("water_with_ice_shelves_esw"),
+                (true, true, false, false) => get_image("water_with_ice_shelves_ne"),
+                (true, false, true, false) => get_image("water_with_ice_shelves_ns"),
+                (true, false, false, true) => get_image("water_with_ice_shelves_nw"),
+                (false, true, true, false) => get_image("water_with_ice_shelves_es"),
+                (false, true, false, true) => get_image("water_with_ice_shelves_ew"),
+                (false, false, true, true) => get_image("water_with_ice_shelves_sw"),
+                (true, false, false, false) => get_image("water_with_ice_shelves_n"),
+                (false, true, false, false) => get_image("water_with_ice_shelves_e"),
+                (false, false, true, false) => get_image("water_with_ice_shelves_s"),
+                (false, false, false, true) => get_image("water_with_ice_shelves_w"),
+                (false, false, false, false) => get_image("water_with_ice_shelves_none"),
             }
         } else {
             match (north_water, east_water, south_water, west_water) {
-                (true, true, true, true) => images::WATER_WITH_SHORELINE_NESW,
-                (true, true, true, false) => images::WATER_WITH_SHORELINE_NES,
-                (true, true, false, true) => images::WATER_WITH_SHORELINE_NEW,
-                (true, false, true, true) => images::WATER_WITH_SHORELINE_NSW,
-                (false, true, true, true) => images::WATER_WITH_SHORELINE_ESW,
-                (true, true, false, false) => images::WATER_WITH_SHORELINE_NE,
-                (true, false, true, false) => images::WATER_WITH_SHORELINE_NS,
-                (true, false, false, true) => images::WATER_WITH_SHORELINE_NW,
-                (false, true, true, false) => images::WATER_WITH_SHORELINE_ES,
-                (false, true, false, true) => images::WATER_WITH_SHORELINE_EW,
-                (false, false, true, true) => images::WATER_WITH_SHORELINE_SW,
-                (true, false, false, false) => images::WATER_WITH_SHORELINE_N,
-                (false, true, false, false) => images::WATER_WITH_SHORELINE_E,
-                (false, false, true, false) => images::WATER_WITH_SHORELINE_S,
-                (false, false, false, true) => images::WATER_WITH_SHORELINE_W,
-                (false, false, false, false) => images::WATER_WITH_SHORELINE_NONE,
+                (true, true, true, true) => get_image("water_with_shoreline_nesw"),
+                (true, true, true, false) => get_image("water_with_shoreline_nes"),
+                (true, true, false, true) => get_image("water_with_shoreline_new"),
+                (true, false, true, true) => get_image("water_with_shoreline_nsw"),
+                (false, true, true, true) => get_image("water_with_shoreline_esw"),
+                (true, true, false, false) => get_image("water_with_shoreline_ne"),
+                (true, false, true, false) => get_image("water_with_shoreline_ns"),
+                (true, false, false, true) => get_image("water_with_shoreline_nw"),
+                (false, true, true, false) => get_image("water_with_shoreline_es"),
+                (false, true, false, true) => get_image("water_with_shoreline_ew"),
+                (false, false, true, true) => get_image("water_with_shoreline_sw"),
+                (true, false, false, false) => get_image("water_with_shoreline_n"),
+                (false, true, false, false) => get_image("water_with_shoreline_e"),
+                (false, false, true, false) => get_image("water_with_shoreline_s"),
+                (false, false, false, true) => get_image("water_with_shoreline_w"),
+                (false, false, false, false) => get_image("water_with_shoreline_none"),
             }
         };
 
-        let img = load_png(buf);
-
-        imageops::overlay(base, &img, 0, 0);
+        imageops::overlay(base, img, 0, 0);
     }
 
     fn render<G: GenericImage<Pixel = Rgba<u8>>>(
@@ -460,185 +453,183 @@ impl Terrain {
         let south_same = south.is_some() && south == Some(self);
         let west_same = west.is_some() && west == Some(self);
 
-        let buf: &'static [u8] = match self {
+        let img = match self {
             Self::DeepOcean => {
                 // TODO: Figure out how the hell this works
-                let tl = load_png(images::DEEP_OCEAN_TL_N);
-                let tr = load_png(images::DEEP_OCEAN_TR_N);
-                let bl = load_png(images::DEEP_OCEAN_BL_N);
-                let br = load_png(images::DEEP_OCEAN_BR_N);
+                let tl = get_image("deep_ocean_tl_n");
+                let tr = get_image("deep_ocean_tr_n");
+                let bl = get_image("deep_ocean_bl_n");
+                let br = get_image("deep_ocean_br_n");
 
-                imageops::overlay(base, &tl, 0, 0);
-                imageops::overlay(base, &tr, 15, 0);
-                imageops::overlay(base, &bl, 0, 15);
-                imageops::overlay(base, &br, 15, 15);
+                imageops::overlay(base, tl, 0, 0);
+                imageops::overlay(base, tr, 15, 0);
+                imageops::overlay(base, bl, 0, 15);
+                imageops::overlay(base, br, 15, 15);
 
                 self.draw_coastline(base, north, east, south, west);
 
                 return;
             }
             Self::Desert => match (north_same, east_same, south_same, west_same) {
-                (true, true, true, true) => images::DESERT_NESW,
-                (true, true, true, false) => images::DESERT_NES,
-                (true, true, false, true) => images::DESERT_NEW,
-                (true, false, true, true) => images::DESERT_NSW,
-                (false, true, true, true) => images::DESERT_ESW,
-                (true, true, false, false) => images::DESERT_NE,
-                (true, false, true, false) => images::DESERT_NS,
-                (true, false, false, true) => images::DESERT_NW,
-                (false, true, true, false) => images::DESERT_ES,
-                (false, true, false, true) => images::DESERT_EW,
-                (false, false, true, true) => images::DESERT_SW,
-                (true, false, false, false) => images::DESERT_N,
-                (false, true, false, false) => images::DESERT_E,
-                (false, false, true, false) => images::DESERT_S,
-                (false, false, false, true) => images::DESERT_W,
-                (false, false, false, false) => images::DESERT_NONE,
+                (true, true, true, true) => get_image("desert_nesw"),
+                (true, true, true, false) => get_image("desert_nes"),
+                (true, true, false, true) => get_image("desert_new"),
+                (true, false, true, true) => get_image("desert_nsw"),
+                (false, true, true, true) => get_image("desert_esw"),
+                (true, true, false, false) => get_image("desert_ne"),
+                (true, false, true, false) => get_image("desert_ns"),
+                (true, false, false, true) => get_image("desert_nw"),
+                (false, true, true, false) => get_image("desert_es"),
+                (false, true, false, true) => get_image("desert_ew"),
+                (false, false, true, true) => get_image("desert_sw"),
+                (true, false, false, false) => get_image("desert_n"),
+                (false, true, false, false) => get_image("desert_e"),
+                (false, false, true, false) => get_image("desert_s"),
+                (false, false, false, true) => get_image("desert_w"),
+                (false, false, false, false) => get_image("desert_none"),
             },
             Self::Forest => match (east_same, west_same) {
-                (true, true) => images::FOREST_EW,
-                (true, false) => images::FOREST_E,
-                (false, true) => images::FOREST_W,
-                (false, false) => images::FOREST_NOT_EW,
+                (true, true) => get_image("forest_ew"),
+                (true, false) => get_image("forest_e"),
+                (false, true) => get_image("forest_w"),
+                (false, false) => get_image("forest_not_ew"),
             },
             Self::Glacier => match (north_same, east_same, south_same, west_same) {
-                (true, true, true, true) => images::GLACIER_NESW,
-                (true, true, true, false) => images::GLACIER_NES,
-                (true, true, false, true) => images::GLACIER_NEW,
-                (true, false, true, true) => images::GLACIER_NSW,
-                (false, true, true, true) => images::GLACIER_ESW,
-                (true, true, false, false) => images::GLACIER_NE,
-                (true, false, true, false) => images::GLACIER_NS,
-                (true, false, false, true) => images::GLACIER_NW,
-                (false, true, true, false) => images::GLACIER_ES,
-                (false, true, false, true) => images::GLACIER_EW,
-                (false, false, true, true) => images::GLACIER_SW,
-                (true, false, false, false) => images::GLACIER_N,
-                (false, true, false, false) => images::GLACIER_E,
-                (false, false, true, false) => images::GLACIER_S,
-                (false, false, false, true) => images::GLACIER_W,
-                (false, false, false, false) => images::GLACIER_NONE,
+                (true, true, true, true) => get_image("glacier_nesw"),
+                (true, true, true, false) => get_image("glacier_nes"),
+                (true, true, false, true) => get_image("glacier_new"),
+                (true, false, true, true) => get_image("glacier_nsw"),
+                (false, true, true, true) => get_image("glacier_esw"),
+                (true, true, false, false) => get_image("glacier_ne"),
+                (true, false, true, false) => get_image("glacier_ns"),
+                (true, false, false, true) => get_image("glacier_nw"),
+                (false, true, true, false) => get_image("glacier_es"),
+                (false, true, false, true) => get_image("glacier_ew"),
+                (false, false, true, true) => get_image("glacier_sw"),
+                (true, false, false, false) => get_image("glacier_n"),
+                (false, true, false, false) => get_image("glacier_e"),
+                (false, false, true, false) => get_image("glacier_s"),
+                (false, false, false, true) => get_image("glacier_w"),
+                (false, false, false, false) => get_image("glacier_none"),
             },
-            Self::Grassland => images::GRASSLAND,
+            Self::Grassland => get_image("grassland"),
             Self::Hills => match (east_same, west_same) {
-                (true, true) => images::HILLS_EW,
-                (true, false) => images::HILLS_E,
-                (false, true) => images::HILLS_W,
-                (false, false) => images::HILLS_NOT_EW,
+                (true, true) => get_image("hills_ew"),
+                (true, false) => get_image("hills_e"),
+                (false, true) => get_image("hills_w"),
+                (false, false) => get_image("hills_not_ew"),
             },
             Self::Jungle => match (north_same, east_same, south_same, west_same) {
-                (true, true, true, true) => images::JUNGLE_NESW,
-                (true, true, true, false) => images::JUNGLE_NES,
-                (true, true, false, true) => images::JUNGLE_NEW,
-                (true, false, true, true) => images::JUNGLE_NSW,
-                (false, true, true, true) => images::JUNGLE_ESW,
-                (true, true, false, false) => images::JUNGLE_NE,
-                (true, false, true, false) => images::JUNGLE_NS,
-                (true, false, false, true) => images::JUNGLE_NW,
-                (false, true, true, false) => images::JUNGLE_ES,
-                (false, true, false, true) => images::JUNGLE_EW,
-                (false, false, true, true) => images::JUNGLE_SW,
-                (true, false, false, false) => images::JUNGLE_N,
-                (false, true, false, false) => images::JUNGLE_E,
-                (false, false, true, false) => images::JUNGLE_S,
-                (false, false, false, true) => images::JUNGLE_W,
-                (false, false, false, false) => images::JUNGLE_NONE,
+                (true, true, true, true) => get_image("jungle_nesw"),
+                (true, true, true, false) => get_image("jungle_nes"),
+                (true, true, false, true) => get_image("jungle_new"),
+                (true, false, true, true) => get_image("jungle_nsw"),
+                (false, true, true, true) => get_image("jungle_esw"),
+                (true, true, false, false) => get_image("jungle_ne"),
+                (true, false, true, false) => get_image("jungle_ns"),
+                (true, false, false, true) => get_image("jungle_nw"),
+                (false, true, true, false) => get_image("jungle_es"),
+                (false, true, false, true) => get_image("jungle_ew"),
+                (false, false, true, true) => get_image("jungle_sw"),
+                (true, false, false, false) => get_image("jungle_n"),
+                (false, true, false, false) => get_image("jungle_e"),
+                (false, false, true, false) => get_image("jungle_s"),
+                (false, false, false, true) => get_image("jungle_w"),
+                (false, false, false, false) => get_image("jungle_none"),
             },
             Self::Lake => {
-                let tl = load_png(images::LAKE_TL_N);
-                let tr = load_png(images::LAKE_TR_N);
-                let bl = load_png(images::LAKE_BL_N);
-                let br = load_png(images::LAKE_BR_N);
+                let tl = get_image("lake_tl_n");
+                let tr = get_image("lake_tr_n");
+                let bl = get_image("lake_bl_n");
+                let br = get_image("lake_br_n");
 
-                imageops::overlay(base, &tl, 0, 0);
-                imageops::overlay(base, &tr, 15, 0);
-                imageops::overlay(base, &bl, 0, 15);
-                imageops::overlay(base, &br, 15, 15);
+                imageops::overlay(base, tl, 0, 0);
+                imageops::overlay(base, tr, 15, 0);
+                imageops::overlay(base, bl, 0, 15);
+                imageops::overlay(base, br, 15, 15);
 
                 self.draw_coastline(base, north, east, south, west);
 
                 return;
             }
             Self::Mountains => match (east_same, west_same) {
-                (true, true) => images::MOUNTAINS_EW,
-                (true, false) => images::MOUNTAINS_E,
-                (false, true) => images::MOUNTAINS_W,
-                (false, false) => images::MOUNTAINS_NOT_EW,
+                (true, true) => get_image("mountains_ew"),
+                (true, false) => get_image("mountains_e"),
+                (false, true) => get_image("mountains_w"),
+                (false, false) => get_image("mountains_not_ew"),
             },
             Self::Ocean => {
-                let tl = load_png(images::OCEAN_TL_N);
-                let tr = load_png(images::OCEAN_TR_N);
-                let bl = load_png(images::OCEAN_BL_N);
-                let br = load_png(images::OCEAN_BR_N);
+                let tl = get_image("ocean_tl_n");
+                let tr = get_image("ocean_tr_n");
+                let bl = get_image("ocean_bl_n");
+                let br = get_image("ocean_br_n");
 
-                imageops::overlay(base, &tl, 0, 0);
-                imageops::overlay(base, &tr, 15, 0);
-                imageops::overlay(base, &bl, 0, 15);
-                imageops::overlay(base, &br, 15, 15);
+                imageops::overlay(base, tl, 0, 0);
+                imageops::overlay(base, tr, 15, 0);
+                imageops::overlay(base, bl, 0, 15);
+                imageops::overlay(base, br, 15, 15);
 
                 self.draw_coastline(base, north, east, south, west);
 
                 return;
             }
             Self::Plains => match (north_same, east_same, south_same, west_same) {
-                (true, true, true, true) => images::PLAINS_NESW,
-                (true, true, true, false) => images::PLAINS_NES,
-                (true, true, false, true) => images::PLAINS_NEW,
-                (true, false, true, true) => images::PLAINS_NSW,
-                (false, true, true, true) => images::PLAINS_ESW,
-                (true, true, false, false) => images::PLAINS_NE,
-                (true, false, true, false) => images::PLAINS_NS,
-                (true, false, false, true) => images::PLAINS_NW,
-                (false, true, true, false) => images::PLAINS_ES,
-                (false, true, false, true) => images::PLAINS_EW,
-                (false, false, true, true) => images::PLAINS_SW,
-                (true, false, false, false) => images::PLAINS_N,
-                (false, true, false, false) => images::PLAINS_E,
-                (false, false, true, false) => images::PLAINS_S,
-                (false, false, false, true) => images::PLAINS_W,
-                (false, false, false, false) => images::PLAINS_NONE,
+                (true, true, true, true) => get_image("plains_nesw"),
+                (true, true, true, false) => get_image("plains_nes"),
+                (true, true, false, true) => get_image("plains_new"),
+                (true, false, true, true) => get_image("plains_nsw"),
+                (false, true, true, true) => get_image("plains_esw"),
+                (true, true, false, false) => get_image("plains_ne"),
+                (true, false, true, false) => get_image("plains_ns"),
+                (true, false, false, true) => get_image("plains_nw"),
+                (false, true, true, false) => get_image("plains_es"),
+                (false, true, false, true) => get_image("plains_ew"),
+                (false, false, true, true) => get_image("plains_sw"),
+                (true, false, false, false) => get_image("plains_n"),
+                (false, true, false, false) => get_image("plains_e"),
+                (false, false, true, false) => get_image("plains_s"),
+                (false, false, false, true) => get_image("plains_w"),
+                (false, false, false, false) => get_image("plains_none"),
             },
             Self::Swamp => match (north_same, east_same, south_same, west_same) {
-                (true, true, true, true) => images::SWAMP_NESW,
-                (true, true, true, false) => images::SWAMP_NES,
-                (true, true, false, true) => images::SWAMP_NEW,
-                (true, false, true, true) => images::SWAMP_NSW,
-                (false, true, true, true) => images::SWAMP_ESW,
-                (true, true, false, false) => images::SWAMP_NE,
-                (true, false, true, false) => images::SWAMP_NS,
-                (true, false, false, true) => images::SWAMP_NW,
-                (false, true, true, false) => images::SWAMP_ES,
-                (false, true, false, true) => images::SWAMP_EW,
-                (false, false, true, true) => images::SWAMP_SW,
-                (true, false, false, false) => images::SWAMP_N,
-                (false, true, false, false) => images::SWAMP_E,
-                (false, false, true, false) => images::SWAMP_S,
-                (false, false, false, true) => images::SWAMP_W,
-                (false, false, false, false) => images::SWAMP_NONE,
+                (true, true, true, true) => get_image("swamp_nesw"),
+                (true, true, true, false) => get_image("swamp_nes"),
+                (true, true, false, true) => get_image("swamp_new"),
+                (true, false, true, true) => get_image("swamp_nsw"),
+                (false, true, true, true) => get_image("swamp_esw"),
+                (true, true, false, false) => get_image("swamp_ne"),
+                (true, false, true, false) => get_image("swamp_ns"),
+                (true, false, false, true) => get_image("swamp_nw"),
+                (false, true, true, false) => get_image("swamp_es"),
+                (false, true, false, true) => get_image("swamp_ew"),
+                (false, false, true, true) => get_image("swamp_sw"),
+                (true, false, false, false) => get_image("swamp_n"),
+                (false, true, false, false) => get_image("swamp_e"),
+                (false, false, true, false) => get_image("swamp_s"),
+                (false, false, false, true) => get_image("swamp_w"),
+                (false, false, false, false) => get_image("swamp_none"),
             },
             Self::Tundra => match (north_same, east_same, south_same, west_same) {
-                (true, true, true, true) => images::TUNDRA_NESW,
-                (true, true, true, false) => images::TUNDRA_NES,
-                (true, true, false, true) => images::TUNDRA_NEW,
-                (true, false, true, true) => images::TUNDRA_NSW,
-                (false, true, true, true) => images::TUNDRA_ESW,
-                (true, true, false, false) => images::TUNDRA_NE,
-                (true, false, true, false) => images::TUNDRA_NS,
-                (true, false, false, true) => images::TUNDRA_NW,
-                (false, true, true, false) => images::TUNDRA_ES,
-                (false, true, false, true) => images::TUNDRA_EW,
-                (false, false, true, true) => images::TUNDRA_SW,
-                (true, false, false, false) => images::TUNDRA_N,
-                (false, true, false, false) => images::TUNDRA_E,
-                (false, false, true, false) => images::TUNDRA_S,
-                (false, false, false, true) => images::TUNDRA_W,
-                (false, false, false, false) => images::TUNDRA_NONE,
+                (true, true, true, true) => get_image("tundra_nesw"),
+                (true, true, true, false) => get_image("tundra_nes"),
+                (true, true, false, true) => get_image("tundra_new"),
+                (true, false, true, true) => get_image("tundra_nsw"),
+                (false, true, true, true) => get_image("tundra_esw"),
+                (true, true, false, false) => get_image("tundra_ne"),
+                (true, false, true, false) => get_image("tundra_ns"),
+                (true, false, false, true) => get_image("tundra_nw"),
+                (false, true, true, false) => get_image("tundra_es"),
+                (false, true, false, true) => get_image("tundra_ew"),
+                (false, false, true, true) => get_image("tundra_sw"),
+                (true, false, false, false) => get_image("tundra_n"),
+                (false, true, false, false) => get_image("tundra_e"),
+                (false, false, true, false) => get_image("tundra_s"),
+                (false, false, false, true) => get_image("tundra_w"),
+                (false, false, false, false) => get_image("tundra_none"),
             },
         };
 
-        let img = load_png(buf);
-
-        imageops::overlay(base, &img, 0, 0);
+        imageops::overlay(base, img, 0, 0);
     }
 
     pub(crate) fn random() -> Self {
@@ -765,33 +756,32 @@ pub enum Special {
 
 impl Special {
     fn render<G: GenericImage<Pixel = Rgba<u8>>>(&self, base: &mut G) {
-        let buf = match self {
+        let img = match self {
             Self::None => return,
-            Self::Oasis => images::OASIS,
-            Self::Oil => images::OIL,
-            Self::Pheasant => images::PHEASANT,
-            Self::Silk => images::SILK,
-            Self::Ivory => images::IVORY,
-            Self::Resources => images::GRASSLAND_RESOURCES, // TODO: Dynamic on river
-            Self::Coal => images::COAL,
-            Self::Wine => images::WINE,
-            Self::Gems => images::GEMS,
-            Self::Fruit => images::FRUIT,
-            Self::Fish => images::FISH,
-            Self::Gold => images::GOLD,
-            Self::Iron => images::IRON,
-            Self::Whales => images::WHALES,
-            Self::Buffalo => images::BUFFALO,
-            Self::Wheat => images::WHEAT,
-            Self::Peat => images::PEAT,
-            Self::Spice => images::SPICE,
-            Self::Game => images::TUNDRA_GAME, // TODO? Does our version support game on forest?
-            Self::Furs => images::FURS,
+            Self::Oasis => get_image("oasis"),
+            Self::Oil => get_image("oil"),
+            Self::Pheasant => get_image("pheasant"),
+            Self::Silk => get_image("silk"),
+            Self::Ivory => get_image("ivory"),
+            Self::Resources => get_image("grassland_resources"), // TODO: Dynamic on river
+            Self::Coal => get_image("coal"),
+            Self::Wine => get_image("wine"),
+            Self::Gems => get_image("gems"),
+            Self::Fruit => get_image("fruit"),
+            Self::Fish => get_image("fish"),
+            Self::Gold => get_image("gold"),
+            Self::Iron => get_image("iron"),
+            Self::Whales => get_image("whales"),
+            Self::Buffalo => get_image("buffalo"),
+            Self::Wheat => get_image("wheat"),
+            Self::Peat => get_image("peat"),
+            Self::Spice => get_image("spice"),
+            Self::Game => get_image("tundra_game"), // TODO? Does our version support game on
+            // forest?
+            Self::Furs => get_image("furs"),
         };
 
-        let img = load_png(buf);
-
-        imageops::overlay(base, &img, 0, 0);
+        imageops::overlay(base, img, 0, 0);
     }
 }
 
@@ -832,27 +822,26 @@ impl Flags {
             let river_south = south.map_or(false, |f| f.contains(Flags::HAS_RIVER));
             let river_west = west.map_or(false, |f| f.contains(Flags::HAS_RIVER));
 
-            let buf = match (river_north, river_east, river_south, river_west) {
-                (true, true, true, true) => images::RIVER_NESW,
-                (true, true, true, false) => images::RIVER_NES,
-                (true, true, false, true) => images::RIVER_NEW,
-                (true, false, true, true) => images::RIVER_NSW,
-                (false, true, true, true) => images::RIVER_ESW,
-                (true, true, false, false) => images::RIVER_NE,
-                (true, false, true, false) => images::RIVER_NS,
-                (true, false, false, true) => images::RIVER_NW,
-                (false, true, true, false) => images::RIVER_ES,
-                (false, true, false, true) => images::RIVER_EW,
-                (false, false, true, true) => images::RIVER_SW,
-                (true, false, false, false) => images::RIVER_N,
-                (false, true, false, false) => images::RIVER_E,
-                (false, false, true, false) => images::RIVER_S,
-                (false, false, false, true) => images::RIVER_W,
-                (false, false, false, false) => images::RIVER,
+            let img = match (river_north, river_east, river_south, river_west) {
+                (true, true, true, true) => get_image("river_nesw"),
+                (true, true, true, false) => get_image("river_nes"),
+                (true, true, false, true) => get_image("river_new"),
+                (true, false, true, true) => get_image("river_nsw"),
+                (false, true, true, true) => get_image("river_esw"),
+                (true, true, false, false) => get_image("river_ne"),
+                (true, false, true, false) => get_image("river_ns"),
+                (true, false, false, true) => get_image("river_nw"),
+                (false, true, true, false) => get_image("river_es"),
+                (false, true, false, true) => get_image("river_ew"),
+                (false, false, true, true) => get_image("river_sw"),
+                (true, false, false, false) => get_image("river_n"),
+                (false, true, false, false) => get_image("river_e"),
+                (false, false, true, false) => get_image("river_s"),
+                (false, false, false, true) => get_image("river_w"),
+                (false, false, false, false) => get_image("river"),
             };
 
-            let img = load_png(buf);
-            imageops::overlay(base, &img, 0, 0);
+            imageops::overlay(base, img, 0, 0);
         }
 
         if self.contains(Self::HAS_ROAD) {
@@ -861,13 +850,13 @@ impl Flags {
         }
 
         if self.contains(Self::HAS_IRRIGATION) {
-            let img = load_png(images::IRRIGATION);
-            imageops::overlay(base, &img, 0, 0);
+            let img = get_image("irrigation");
+            imageops::overlay(base, img, 0, 0);
         }
 
         if self.contains(Self::HAS_MINE) {
-            let img = load_png(images::MINE);
-            imageops::overlay(base, &img, 0, 0);
+            let img = get_image("mine");
+            imageops::overlay(base, img, 0, 0);
         }
 
         if self.contains(Self::HAS_RAILROAD) {
@@ -876,13 +865,13 @@ impl Flags {
         }
 
         if self.contains(Self::HAS_RUINS) {
-            let img = load_png(images::RUINS);
-            imageops::overlay(base, &img, 0, 0);
+            let img = get_image("ruins");
+            imageops::overlay(base, img, 0, 0);
         }
 
         if self.contains(Self::HAS_POLLUTION) {
-            let img = load_png(images::POLLUTION);
-            imageops::overlay(base, &img, 0, 0);
+            let img = get_image("pollution");
+            imageops::overlay(base, img, 0, 0);
         }
 
         if self.contains(Self::HAS_FORT) {
@@ -895,13 +884,13 @@ impl Flags {
         }
 
         if self.contains(Self::HAS_HUT) {
-            let img = load_png(images::VILLAGE);
-            imageops::overlay(base, &img, 0, 0);
+            let img = get_image("village");
+            imageops::overlay(base, img, 0, 0);
         }
 
         if self.contains(Self::HAS_FARMLAND) {
-            let img = load_png(images::FARMLAND);
-            imageops::overlay(base, &img, 0, 0);
+            let img = get_image("farmland");
+            imageops::overlay(base, img, 0, 0);
         }
 
         // TODO: City definitely shouldn't be a flag

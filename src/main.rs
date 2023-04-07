@@ -1,3 +1,4 @@
+#![feature(once_cell)]
 #![deny(
     clippy::pedantic,
     clippy::missing_const_for_fn,
